@@ -1,9 +1,17 @@
-import React from 'react'
+import Banner from "@/components/Banner";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import React from "react";
 
-const PublicLayout = ({children}: {children: React.ReactNode}) => {
+const PublicLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div>{children}</div>
-  ) 
-}
+    <>
+      <Banner />
+      <Navbar />
+      {children}
+      <Footer />
+    </>
+  );
+};
 
-export default PublicLayout
+export default PublicLayout;

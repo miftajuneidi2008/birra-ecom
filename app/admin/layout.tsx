@@ -1,9 +1,17 @@
-import React from 'react'
+import AdminLayout from "@/components/admin/AdminLayout";
 
-const AdminLayout = ({children}: {children: React.ReactNode}) => {
-  return (
-    <div>{children}</div>
-  )
+export const metadata = {
+    title: "GoCart. - Admin",
+    description: "GoCart. - Admin",
+};
+
+export default function RootAdminLayout({ children }:{ children: React.ReactNode }) {
+
+    return (
+        <>
+            <AdminLayout>
+                {children}
+            </AdminLayout>
+        </>
+    );
 }
-
-export default AdminLayout
