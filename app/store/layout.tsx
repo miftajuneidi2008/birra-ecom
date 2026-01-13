@@ -1,9 +1,13 @@
+import StoreLayout from '@/components/store/StoreLayout';
 import React from 'react'
-
-const StoreLayout = ({children}: {children: React.ReactNode}) => {
+export const metadata = {
+    title: "GoCart. - Store Dashboard",
+    description: "GoCart. - Store Dashboard",
+};
+const RootAdminLayout = ({children}: {children: React.ReactNode}) => {
   return (
-    <div>{children}</div>
+    <StoreLayout>{children}</StoreLayout> 
   )
 }
 
-export default StoreLayout
+export default RootAdminLayout

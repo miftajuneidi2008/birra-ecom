@@ -190,7 +190,16 @@ export interface IOrderItem {
   price: number;
   product: IProduct;
 }
-
+export interface Coupon {
+  code: string;
+  description: string;
+  discount: number;
+  forNewUser: boolean;
+  forMember: boolean;
+  isPublic: boolean;
+  expiresAt: string;
+  createdAt: string;
+}
 // 3. Main Order Type
 export interface IOrder {
   id: string;
@@ -204,7 +213,7 @@ export interface IOrder {
   createdAt: string;
   updatedAt: string;
   isCouponUsed: boolean;
-  coupon?: any;
+  coupon?: Coupon;
   orderItems: IOrderItem[];
   address: IAddress;
   user: IUser;
@@ -224,16 +233,7 @@ export interface Address {
   createdAt: string;
 }
 
-export interface Coupon {
-  code: string;
-  description: string;
-  discount: number;
-  forNewUser: boolean;
-  forMember: boolean;
-  isPublic: boolean;
-  expiresAt: string;
-  createdAt: string;
-}
+
 
 export interface dummyStoreDataType {
   id: string;
@@ -244,7 +244,7 @@ export interface dummyStoreDataType {
   address: string;
   status: string;
   isActive: boolean;
-  logo: StaticImageData;
+  logo: StaticImageData | string; 
   email: string;
   contact: string;
   createdAt: string;
@@ -256,3 +256,5 @@ export interface dummyStoreDataType {
     image: StaticImageData;
   };
 }
+
+

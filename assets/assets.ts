@@ -390,3 +390,7 @@ export const dummyStoreDashboardData = {
     "totalEarnings": 636,
     "totalProducts": 5
 }
+
+export type StoreDashboardData = typeof dummyStoreDashboardData;
+export type ProductType =  typeof productDummyData
+export type OrderType = typeof orderDummyData
