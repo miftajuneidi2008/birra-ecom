@@ -3,7 +3,7 @@ import { TitleType } from '@/lib/types'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
-
+ 
 const Title = ({ title, description, visibleButton = true, href = '' }:TitleType) => {
 
     return (

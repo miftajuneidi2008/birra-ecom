@@ -2,16 +2,17 @@
 import { useEffect, useState } from "react"
 import Loading from "@/components/Loading"
 import { orderDummyData, OrderType } from "@/assets/assets"
+import { IOrder } from "@/lib/types"
 
 export default function StoreOrders() {
-    const [orders, setOrders] = useState<OrderType>([])
+    const [orders, setOrders] = useState<IOrder[]>([])
     const [loading, setLoading] = useState(true)
-    const [selectedOrder, setSelectedOrder] = useState(null)
+    const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
 
     const fetchOrders = async () => {
-       setOrders(orderDummyData)
+       setOrders(orderDummyData as IOrder[])
        setLoading(false)
     }
 
@@ -21,7 +22,7 @@ export default function StoreOrders() {
 
     }
 
-    const openModal = (order) => {
+    const openModal = (order: IOrder) => {
         setSelectedOrder(order)
         setIsModalOpen(true)
     }
@@ -68,7 +69,7 @@ export default function StoreOrders() {
                                     <td className="px-4 py-3">
                                         {order.isCouponUsed ? (
                                             <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
-                                                {order.coupon.createdAt}
+                                                {order.coupon?.code}
                                             </span>
                                         ) : (
                                             "—"
@@ -139,7 +140,7 @@ export default function StoreOrders() {
                             <p><span className="text-green-700">Payment Method:</span> {selectedOrder.paymentMethod}</p>
                             <p><span className="text-green-700">Paid:</span> {selectedOrder.isPaid ? "Yes" : "No"}</p>
                             {selectedOrder.isCouponUsed && (
-                                <p><span className="text-green-700">Coupon:</span> {selectedOrder.coupon.code} ({selectedOrder.coupon.discount}% off)</p>
+                                <p><span className="text-green-700">Coupon:</span> {selectedOrder?.coupon?.code} ({selectedOrder.coupon?.discount}% off)</p>
                             )}
                             <p><span className="text-green-700">Status:</span> {selectedOrder.status}</p>
                             <p><span className="text-green-700">Order Date:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
