@@ -21,6 +21,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ isSeller, storeInfo });
   } catch (error) {
     console.log(error);
-    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
+    return NextResponse.json({ error: "An error occurred" }, { status: 500 });   
   }
 }
