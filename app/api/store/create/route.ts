@@ -1,4 +1,4 @@
-import { getAuth } from "@clerk/nextjs/server";
+import { auth, getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { authenticator } from "@/lib/ImageKitAuthenticator";
@@ -6,11 +6,13 @@ import { upload } from "@imagekit/next";
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request);
+    const { userId } = await auth();
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
+    
+    
     const formData = await request.formData();
     const name = formData.get("name")?.toString();
     const username = formData.get("username")?.toString();
@@ -35,20 +37,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if store exists
+   
     const existingStore = await prisma.store.findFirst({ where: { userId } });
     if (existingStore)
       return NextResponse.json({ status: existingStore.status });
-
+    console.log(existingStore, "Existing Store");
     // Check if username taken
     const isUsernameTaken = await prisma.store.findFirst({
       where: { username: username.toLowerCase() },
     });
     if (isUsernameTaken)
       return NextResponse.json({ error: "Username taken" }, { status: 400 });
-
+  console.log(existingStore, isUsernameTaken,"asdgsadg");
     let imageUrl = "";
-
+     
     // Fix for the TypeScript Errors
     if (image instanceof File) {
       const { signature, expire, token, publicKey } = await authenticator();
@@ -74,7 +76,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-
+    console.log("Image uploaded to ImageKit:");
     const newStore = await prisma.store.create({
       data: {
         userId,

@@ -4,8 +4,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import Loading from "@/components/Loading";
+import { useAuth, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function CreateStore() {
+  const { user } = useUser();
+  const router = useRouter();
+  const { getToken } = useAuth();
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
@@ -22,7 +28,7 @@ export default function CreateStore() {
   });
 
   const onChangeHandler = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setStoreInfo({ ...storeInfo, [e.target.name]: e.target.value });
   };
@@ -36,11 +42,49 @@ export default function CreateStore() {
   const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Logic to submit the store details
+    if (!user) {
+      toast.error("You must be logged in to submit a store");
+      return;
+    }
+    try {
+      const token = await getToken();
+      const formData = new FormData();
+      formData.append("name", storeInfo.name);
+      formData.append("username", storeInfo.username);
+      formData.append("description", storeInfo.description);
+      formData.append("email", storeInfo.email);
+      formData.append("contact", storeInfo.contact);
+      formData.append("address", storeInfo.address);
+      formData.append("image", storeInfo.image as Blob);
+      const { data } = await axios.post("/api/store/create", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      toast.success("Store submitted successfully");
+    } catch (error: unknown) {
+      console.log(error);
+      toast.error(
+        (error as { response?: { data?: { error?: string } } }).response?.data
+          ?.error || "An error occurred while submitting the store",
+      );
+    }
   };
 
   useEffect(() => {
     fetchSellerStatus();
   }, []);
+
+  if (!user) {
+    return (
+      <div className="min-h-[80vh] w-full flex items-center justify-center text-slate-400">
+        <h1 className="text-2xl md:text-4xl font-semibold">
+          {" "}
+          Please <span className="text-slate-500">Login</span> to Continue
+        </h1>
+      </div>
+    );
+  }
 
   return !loading ? (
     <>
