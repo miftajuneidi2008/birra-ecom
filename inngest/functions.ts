@@ -47,3 +47,21 @@ export const syncUserDelete = inngest.createFunction(
     });
   },
 );
+
+ export const DeleteCouponsOnExpiry = inngest.createFunction(
+  { id: "delete-coupons-on-expiry" },
+  { event:"app/coupon.expired"},
+  async ({event,step})=>{
+  const {data} = event;
+  const expireyDate = new Date(data.expiresAt);
+  await step.sleepUntil('wait-for-expiry', expireyDate);
+  await step.run('delete-coupon-from-database', async()=>{
+    await prisma.coupon.delete({
+        where: {
+            code: data.code
+        }
+    })
+  
+  })
+}
+)

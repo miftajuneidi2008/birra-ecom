@@ -257,4 +257,17 @@ export interface dummyStoreDataType {
   };
 }
 
+export type Order = {
+  createdAt: string;
+  total: number;
+};
+
+export type AdminDashboardData = {
+  orders: number;
+  stores: number;
+  products:number;
+  revenue: number | string;
+  allOrders: Order[];
+};
+
 

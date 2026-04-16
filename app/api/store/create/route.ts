@@ -1,13 +1,18 @@
 import { auth, getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { authenticator } from "@/lib/ImageKitAuthenticator";
 import { upload } from "@imagekit/next";
+import ImageKit from "imagekit";
 
+const imagekit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY!, 
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
+  urlEndpoint: process.env.NEXT_PUBLIC_URL_ENDPOINT!,
+});
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-
+    console.log(userId, "User ID from Auth");  
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -48,28 +53,22 @@ export async function POST(request: NextRequest) {
     });
     if (isUsernameTaken)
       return NextResponse.json({ error: "Username taken" }, { status: 400 });
-  console.log(existingStore, isUsernameTaken,"asdgsadg");
-    let imageUrl = "";
-     
-    // Fix for the TypeScript Errors
-    if (image instanceof File) {
-      const { signature, expire, token, publicKey } = await authenticator();
+  let imageUrl = "";
 
-      const response = await upload({
-        file: image,
+    // 2. Server-side Upload Logic
+    if (image instanceof File) {
+      // Convert File to Buffer for the Node.js environment
+      const buffer = Buffer.from(await image.arrayBuffer());
+
+      const uploadResponse = await imagekit.upload({
+        file: buffer,
         fileName: image.name,
         useUniqueFileName: true,
         tags: ["store-logo"],
         folder: "/store-logos",
-        publicKey,
-        signature,
-        expire,
-        token,
       });
 
-      if (response.url) {
-        imageUrl = response.url;
-      }
+      imageUrl = uploadResponse.url;
     } else {
       return NextResponse.json(
         { error: "Invalid image file" },
@@ -113,7 +112,10 @@ export async function GET(request: NextRequest) {
     }
     const store = await prisma.store.findFirst({ where: { userId } });
     if (!store) {
-      return NextResponse.json({ error: "Store not found" }, { status: 404 });
+      return NextResponse.json(
+  { status: null },
+  { status: 200 }
+);        
     }
     return NextResponse.json({ status: store.status });
   } catch (error) {
